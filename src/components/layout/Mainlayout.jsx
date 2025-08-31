@@ -49,7 +49,7 @@ const Mainlayout = () => {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 max-w-[1000px] mx-auto  w-full mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-w-[1000px] mx-auto  w-full mb-5">
         <div className="bg-white p-7 w-full flex flex-col gap-3 rounded-2xl ">
           <div className="flex justify-between">
             <div className="flex flex-col gap-1">
