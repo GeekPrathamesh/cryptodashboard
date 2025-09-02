@@ -2,7 +2,7 @@ import "@fontsource/ubuntu"; // Defaults to weight 400
 
 import "./App.css";
 import Dashboard from "./pages/dashboard/Dashboard";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Transaction from "./pages/transaction/Transaction";
 import Support from "./pages/support/Support";
 import Register from "./pages/AuthAll/Register";
@@ -13,6 +13,7 @@ import PasswordResetSent from "./pages/AuthAll/Passwordresetsent";
 import ResetPassword from "./pages/AuthAll/Resetpassword";
 import PasswordResetDone from "./pages/AuthAll/PasswordResetDone";
 import RegistrationSuccess from "./pages/AuthAll/RegistrationSuccess";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
 
         </Routes>
       </BrowserRouter>
+
+            <Toaster position="top-center" reverseOrder={false} />
     </>
   );
 }

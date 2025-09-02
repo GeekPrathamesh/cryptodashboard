@@ -4,26 +4,32 @@ import { signInUser } from "../../api/query/userQuery";
 import { useMutation } from "@tanstack/react-query";
 
 import * as Yup from "yup";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const loginSchema  = Yup.object({
-  email: Yup.string().email("Invalid email").required("Email is required"),
+  const loginSchema = Yup.object({
+    email: Yup.string().email("Invalid email").required("Email is required"),
 
-  remember: Yup.bool(),
+    remember: Yup.bool(),
   });
 
-  const submit=(values) => {
-                        console.log(values);
-            mutate(values);
-          }
 
-              const {mutate , isloading , error , isError} = useMutation({
-        mutationKey:["signin"],
-        mutationFn:signInUser,
-        onSuccess: ()=>navigate("/RegistrationSuccess"),
-    })
 
-    if(isError) return <div>{error.message}</div>
+  const { mutate, isloading } = useMutation({
+    mutationKey: ["signin"],
+    mutationFn: signInUser,
+    onSuccess: () => navigate("/RegistrationSuccess"),
+    onError: (error) => {
+    toast.error(error.message || "Login failed");
+  }
+    
+  });
+
+    const submit = (values) => {
+    console.log(values);
+    mutate(values);
+  };
+
 
 
   return (
@@ -36,10 +42,9 @@ const Login = () => {
           Enter your credentials to access the account.
         </p>
         <Formik
-          initialValues={{ email: "", password: "" ,remember: false}}
+          initialValues={{ email: "", password: "", remember: false }}
           onSubmit={submit}
-          
-          validationSchema={loginSchema }
+          validationSchema={loginSchema}
         >
           <Form className="space-y-4">
             <div>
@@ -50,7 +55,11 @@ const Login = () => {
                 placeholder="name@email.com"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
               />
-              <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
+              <ErrorMessage
+                name="email"
+                component="div"
+                className="text-red-500 text-sm"
+              />
             </div>
 
             <div>
@@ -61,8 +70,11 @@ const Login = () => {
                 placeholder="••••••••••••"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
               />
-              <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
-
+              <ErrorMessage
+                name="password"
+                component="div"
+                className="text-red-500 text-sm"
+              />
             </div>
 
             <div className="flex items-center justify-between">
@@ -83,7 +95,8 @@ const Login = () => {
               </Link>
             </div>
 
-            <button disabled={isloading}
+            <button
+              disabled={isloading}
               type="submit"
               className="w-full bg-[#5F00D9] text-white font-bold py-2 rounded-md hover:bg-[#4500b0] transition-colors duration-200"
             >
