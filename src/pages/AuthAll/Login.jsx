@@ -1,36 +1,43 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link } from "react-router-dom";
-import { signInUser } from "../../api/query/userQuery";
+import { Link, useNavigate } from "react-router-dom";
+import { LoginUser } from "../../api/query/userQuery";
 import { useMutation } from "@tanstack/react-query";
 
 import * as Yup from "yup";
 import toast from "react-hot-toast";
+import { useContext } from "react";
+import Authprovider, { Usercontext } from "../../contextapi/Usercontext";
 
 const Login = () => {
+  const { login } = useContext(Usercontext);
+
   const loginSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
 
     remember: Yup.bool(),
   });
 
+  const navigate = useNavigate();
 
-
-  const { mutate, isloading } = useMutation({
-    mutationKey: ["signin"],
-    mutationFn: signInUser,
-    onSuccess: () => navigate("/RegistrationSuccess"),
+  const { mutate, isLoading } = useMutation({
+    mutationKey: ["Login"],
+    mutationFn: LoginUser,
+    onSuccess: (data) => {
+      const { token } = data;
+      if (token) {
+        login(token);
+      }
+      navigate("/")
+    },
     onError: (error) => {
-    toast.error(error.message || "Login failed");
-  }
-    
+      toast.error(error.message || "Login failed");
+    },
   });
 
-    const submit = (values) => {
+  const submit = (values) => {
     console.log(values);
     mutate(values);
   };
-
-
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -96,11 +103,11 @@ const Login = () => {
             </div>
 
             <button
-              disabled={isloading}
+              disabled={isLoading}
               type="submit"
               className="w-full bg-[#5F00D9] text-white font-bold py-2 rounded-md hover:bg-[#4500b0] transition-colors duration-200"
             >
-              Log In
+              {isLoading ? "Logging in..." : "Login"}
             </button>
           </Form>
         </Formik>

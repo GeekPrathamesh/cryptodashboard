@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaBars } from "react-icons/fa";
+import { Usercontext } from "../../contextapi/Usercontext";
 
 const Topnav = ({ title, toggleBar }) => {
   const [relate, setrelate] = useState(false);
+
+  const {logout} = useContext(Usercontext)
 
   return (
     <div className="h-[64px] bg-[#FFFFFF] flex items-center justify-between md:px-30 px-15">
@@ -25,14 +28,12 @@ const Topnav = ({ title, toggleBar }) => {
         />
         {relate && (
           <div className="absolute top-10 w-[130px] left-[-47px]">
-            <ul className="flex flex-col gap-2 p-2 ">
+            <ul className="flex flex-col gap-2 p-2 bg-blue-100 ">
               <li
-                onClick={() => {
-                  setrelate(!relate);
-                }}
+                onClick={logout}
                 className="bg-[#F3F3F7] text-center hover:outline cursor-pointer hover:bg-[#6e12e7] hover:text-white rounded"
               >
-                Sign In?
+                Log out
               </li>
               <li
                 onClick={() => {

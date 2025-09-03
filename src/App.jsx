@@ -14,24 +14,25 @@ import ResetPassword from "./pages/AuthAll/Resetpassword";
 import PasswordResetDone from "./pages/AuthAll/PasswordResetDone";
 import RegistrationSuccess from "./pages/AuthAll/RegistrationSuccess";
 import { Toaster } from "react-hot-toast";
+import Protectedroutes from "./Authprotected/Protectedroutes";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
-          <Route path="/transactions" element={<Transaction/>}/>
-          <Route path="/support" element={<Support/>}/>
+          <Route path="/" element={<Protectedroutes><Dashboard /></Protectedroutes>} />
+          
+          <Route path="/transactions" element={<Protectedroutes><Transaction/></Protectedroutes>}/>
+          <Route path="/support" element={<Protectedroutes><Support/></Protectedroutes>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/login" element={<Login/>}/>
-          <Route path="/mailverification" element={<EmailVerification/>}/>
+          <Route path="/mailverification/:email" element={<EmailVerification/>}/>
           <Route path="/forgotpassword" element={<ForgotPassword/>}/>
-          <Route path="/passwordresetsent" element={<PasswordResetSent/>}/>
-          <Route path="/resetpassword" element={<ResetPassword/>}/>
+          <Route path="/passwordresetsent/:mail" element={<PasswordResetSent/>}/>
+          <Route path="/forgot-password-verify/:token" element={<ResetPassword/>}/>
           <Route path="/passwordrestsuccess" element={<PasswordResetDone/>}/>
-          <Route path="/RegistrationSuccess" element={<RegistrationSuccess/>}/>
+          <Route path="/email-verify/:token" element={<RegistrationSuccess/>}/>
 
         </Routes>
       </BrowserRouter>

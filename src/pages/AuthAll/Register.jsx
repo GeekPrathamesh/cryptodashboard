@@ -2,25 +2,50 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 
 import * as Yup from "yup";
+import { RegisterUser } from "../../api/query/userQuery";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { useState } from "react";
 
 const Register = () => {
-const userSchema = Yup.object({
-  name: Yup.string().required("First name is required"),
-  surname: Yup.string().required("Surname is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string().min(6,"Password is required"),
-  repeatPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Repeat password is required"),
-  agree: Yup.bool().oneOf([true], "You must accept the terms"),
-});
-const navigate = useNavigate();
+  const [email, setemail] = useState();
 
-  const submit=(values) => {
-            console.log(values);
-            navigate("/RegistrationSuccess")
-          }
+  const userSchema = Yup.object({
+    firstname: Yup.string().required("First name is required"),
+    lastname: Yup.string().required("Surname is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters"),
+    repeatPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Repeat password is required"),
+    agree: Yup.bool().oneOf([true], "You must accept the terms"),
+  });
 
+  const navigate = useNavigate();
+
+  const { mutate, isLoading } = useMutation({
+    mutationKey: ["Register"],
+    mutationFn: RegisterUser,
+    onSuccess: () => {
+      navigate(`/mailverification/${email}`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Sign in failed");
+    },
+  });
+
+  const submit = (values) => {
+    console.log(values);
+    setemail(values.email);
+    mutate({
+      password: values.password,
+      email: values.email,
+      firstName: values.firstname,
+      lastName: values.lastname,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -33,8 +58,8 @@ const navigate = useNavigate();
         </p>
         <Formik
           initialValues={{
-            name: "",
-            surname: "",
+            firstname: "",
+            lastname: "",
             email: "",
             password: "",
             repeatPassword: "",
@@ -50,12 +75,12 @@ const navigate = useNavigate();
                 <label className="block font-semibold mb-1">First Name</label>
                 <Field
                   type="text"
-                  name="name"
+                  name="firstname"
                   placeholder="James"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
                 />
                 <ErrorMessage
-                  name="name"
+                  name="firstname"
                   component="div"
                   className="text-red-500 text-sm"
                 />
@@ -64,12 +89,12 @@ const navigate = useNavigate();
                 <label className="block font-semibold mb-1">Surname</label>
                 <Field
                   type="text"
-                  name="surname"
+                  name="lastname"
                   placeholder="Arthur"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
                 />
                 <ErrorMessage
-                  name="surname"
+                  name="lastname"
                   component="div"
                   className="text-red-500 text-sm"
                 />
@@ -144,6 +169,7 @@ const navigate = useNavigate();
             />
 
             <button
+              disabled={isLoading}
               type="submit"
               className="w-full bg-[#D8DDE2] text-black font-bold py-2 rounded-md hover:opacity-90 transition duration-150 hover:bg-[#893eec] hover:text-white"
             >

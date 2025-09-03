@@ -1,20 +1,42 @@
-import React, { useState } from "react";
+
 import { IoMdArrowBack } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
 
 import * as Yup from "yup";
+import { forgotpasswordEmailsent } from "../../api/query/userQuery";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { useState } from "react";
 
 const ForgotPassword = () => {
+
+  const [mail , setmail]=useState();
+
   const passwordSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
   });
 
+  const navigate = useNavigate()
+
+
+  const { mutate, isLoading } = useMutation({
+    mutationKey: ["Register"],
+    mutationFn: forgotpasswordEmailsent,
+    onSuccess: () => {
+      navigate(`/passwordresetsent/${mail}`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Sign in failed");
+    },
+  });
+
 
     const submit=(values) => {
-            console.log(values);
+      setmail(values.email);
+            mutate({email:values.email})
 
           }
 
@@ -56,14 +78,14 @@ const ForgotPassword = () => {
                 />
             </div>
 
-            <Link to="/PasswordResetSent">
-              <button
+       
+              <button disabled={isLoading}
                 type="submit"
                 className="w-full bg-[#5F00D9] text-white font-bold py-2 rounded-md hover:bg-[#4500b0] transition-colors duration-200"
               >
-                Reset Password
+                {isLoading ? "Sending..." : "Reset Password"}
               </button>
-            </Link>
+          
           </Form>
         </Formik>
       </div>
