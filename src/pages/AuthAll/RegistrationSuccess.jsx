@@ -25,7 +25,7 @@ const navigate = useNavigate();
 
   if(isLoading) return <div>Loading...</div>
   const handleEnterApp = () => {
-    navigate("/dashboard"); // or wherever your app's home page is
+    navigate("/"); // or wherever your app's home page is
   };
 
   return (

@@ -3,8 +3,23 @@ import createHttpError, { InternalServerError } from "http-errors";
 import User from "../model/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { FRONTEND_URL, JWT_KEY, transporter } from "../config";
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
+const JWT_KEY = process.env.JWT_KEY as string;
+const FRONTEND_URL = process.env.FRONTEND_URL as string;
+
+
+
+
+export const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER, // your Gmail address
+    pass: process.env.EMAIL_PASS, // App Password from Google
+  },
+});
+
 export const signupUser: RequestHandler = async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
 
@@ -79,11 +94,18 @@ export const sendVerificationMail: RequestHandler = async (req, res, next) => {
     });
 
     let info = await transporter.sendMail({
-      from: '"Fred Foo 👻" <anshuraj@dosomecoding.com>', // sender address
+      from: `"Crypto App" <${process.env.EMAIL_USER}>`,
+      // sender address
       to: `${email}`, // list of receivers
       subject: "For Email Verification", // Subject line
       // text: "Hello world?", // plain text body
-      html: `Your Verification Link <a href="${FRONTEND_URL}/email-verify/${jwtToken}">Link</a>`, // html body
+      html: `<h2>Email Verification</h2>
+                <p>Click the button below to verify your email:</p>
+                <a href="${FRONTEND_URL}/email-verify/${jwtToken}"
+                  style="display:inline-block;padding:10px 20px;background:#5F00D9;color:#fff;text-decoration:none;border-radius:5px;">
+                  Verify Email
+                </a>
+                `, // html body
     });
 
     // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
@@ -146,9 +168,7 @@ export const sendForgotPasswordMail: RequestHandler = async (
 
     await user.updateOne({ $set: { verifyToken: encryptedToken } });
 
-    res.json({
-      message: `Preview URL: %s ${nodemailer.getTestMessageUrl(info)}`,
-    });
+    res.json({ message: "Email sent successfully" });
   } catch (error) {
     return next(InternalServerError);
   }
